@@ -21,12 +21,21 @@ func Ok(tb testing.TB, err error) {
 	}
 }
 
-// equals fails the test if exp is not equal to act.
-func equals(tb testing.TB, exp, act interface{}) {
+// Nok fails the test if nil, or the error message is different from the expected
+func Nok(tb testing.TB, err error, expectedMessage string) {
+	tb.Helper()
+	if err == nil {
+		tb.Errorf("\033[31m unexpected success, error shouldn't be nil")
+	} else if err.Error() != expectedMessage {
+		tb.Errorf("\033[31m unexpected error message: \n\texp: %#v\n\tgot: %#v\033[39m\n", expectedMessage, err.Error())
+	}
+}
+
+// Equals fails the test if exp is not equal to act.
+func Equals(tb testing.TB, exp, act interface{}) {
+	tb.Helper()
 	if !reflect.DeepEqual(exp, act) {
-		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("\033[31m%s:%d:\n\texp: %#v\n\tgot: %#v\033[39m\n", filepath.Base(file), line, exp, act)
-		tb.Fail()
+		tb.Errorf("\033[31m\n\texp: %#v\n\tgot: %#v\033[39m\n", exp, act)
 	}
 }
 
