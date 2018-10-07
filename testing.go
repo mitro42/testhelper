@@ -1,28 +1,23 @@
-package testing
+package testhelper
 
 import (
-	"fmt"
-	"path/filepath"
 	"reflect"
-	"runtime"
 	"testing"
 )
 
-// assert fails the test if the condition is false.
-func assert(tb testing.TB, condition bool, msg string, v ...interface{}) {
+// Assert fails the test if the condition is false.
+func Assert(tb testing.TB, condition bool, msg string, v ...interface{}) {
+	tb.Helper()
 	if !condition {
-		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("\033[31m%s:%d: "+msg+"\033[39m\n", append([]interface{}{filepath.Base(file), line}, v...)...)
-		tb.Fail()
+		tb.Errorf("\033[31m "+msg+"\033[39m\n", v...)
 	}
 }
 
-// ok fails the test if an err is not nil.
-func ok(tb testing.TB, err error) {
+// Ok fails the test if an err is not nil.
+func Ok(tb testing.TB, err error) {
+	tb.Helper()
 	if err != nil {
-		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("\033[31m%s:%d: unexpected error: %s\033[39m\n", filepath.Base(file), line, err.Error())
-		tb.Fail()
+		tb.Errorf("\033[31m unexpected error: %s\033[39m\n", err.Error())
 	}
 }
 
@@ -35,16 +30,13 @@ func equals(tb testing.TB, exp, act interface{}) {
 	}
 }
 
-func expectPanic(tb testing.TB, expectedMessage string) {
+// ExpectPanic fails if the test completes without a panic or with a panic but with incorrect error message
+func ExpectPanic(tb testing.TB, expectedMessage string) {
+	tb.Helper()
 	r := recover()
-	_, file, line, _ := runtime.Caller(1)
 	if r == nil {
-		fmt.Printf("\033[31m%s:%d:\nExpected panic with error message: \n\t%v\033[39m\n",
-			filepath.Base(file), line, expectedMessage)
-		tb.Fail()
+		tb.Errorf("\033[31m\nExpected panic with error message: \n\t%v\033[39m\n", expectedMessage)
 	} else if r != expectedMessage {
-		fmt.Printf("\033[31m%s:%d:\nExpected panic with error message: \n\texp: %v\n\tgot: %v\033[39m\n",
-			filepath.Base(file), line, expectedMessage, r)
-		tb.Fail()
+		tb.Errorf("\033[31m\nExpected panic with error message: \n\texp: %v\n\tgot: %v\033[39m\n", expectedMessage, r)
 	}
 }
