@@ -45,7 +45,7 @@ func NokPrefix(tb testing.TB, err error, expectedPrefix string) {
 func Equals(tb testing.TB, exp, act interface{}) {
 	tb.Helper()
 	if !reflect.DeepEqual(exp, act) {
-		tb.Errorf("\033[31m\n\texp: %#v\n\tgot: %#v\033[39m\n", exp, act)
+		tb.Errorf("\033[31m\n\texp: %#v (%T)\n\tgot: %#v (%T)\033[39m\n", exp, exp, act, act)
 	}
 }
 
