@@ -21,13 +21,23 @@ func Ok(tb testing.TB, err error) {
 	}
 }
 
-// Nok fails the test if nil, or the error message is different from the expected
+// Nok fails the test if err is nil, or the error message is different from the expected
 func Nok(tb testing.TB, err error, expectedMessage string) {
 	tb.Helper()
 	if err == nil {
 		tb.Errorf("\033[31m unexpected success, error shouldn't be nil")
 	} else if err.Error() != expectedMessage {
 		tb.Errorf("\033[31m unexpected error message: \n\texp: %#v\n\tgot: %#v\033[39m\n", expectedMessage, err.Error())
+	}
+}
+
+// NokPrefix fails the test if err is nil, or the error message doesn't start with th required prefix
+func NokPrefix(tb testing.TB, err error, expectedPrefix string) {
+	tb.Helper()
+	if err == nil {
+		tb.Errorf("\033[31m unexpected success, error shouldn't be nil")
+	} else if !strings.HasPrefix(err.Error(), expectedPrefix) {
+		tb.Errorf("\033[31m unexpected error message: \n\texp: %#v\n\tgot: %#v\033[39m\n", expectedPrefix, err.Error())
 	}
 }
 
