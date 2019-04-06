@@ -2,6 +2,7 @@ package testhelper
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
